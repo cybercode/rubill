@@ -1,0 +1,14 @@
+# $Id$
+require "rubygems"
+#gem "ruport","=1.2.2"
+require "ruport"
+
+$:.unshift('./lib')
+%w(address_book calendar options).each do |f|
+  require "rubill/#{f}"
+end
+
+options=InvoiceOptions.parse(ARGV)
+options[:calendar]=ARGV[0] || InvoiceOptions.parse(['-h'])
+
+Invoice.render_pdf(options)
