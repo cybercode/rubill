@@ -6,6 +6,7 @@ def init_attrs
   @address_book = AddressBook.new
 
   @from = options[:from]||@calendar.last_billed_date+1
+  # default to end of month
   @to=options[:to]||(@from >> 1) - 1
   STDERR.puts "Generating invoice for #{@calendar.name} " +
     "from #{@from.to_s} to #{@to.to_s}"

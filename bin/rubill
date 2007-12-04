@@ -1,10 +1,11 @@
+#!/usr/bin/ruby
 # $Id$
 require "rubygems"
 #gem "ruport","=1.2.2"
 require "ruport"
 
 $:.unshift('./lib')
-%w(address_book calendar options).each do |f|
+%w(address_book calendar options invoice_formatter helpers).each do |f|
   require "rubill/#{f}"
 end
 

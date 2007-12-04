@@ -24,11 +24,13 @@ class Calendar < Application
   end
 
   def invoices
-    @calendar.todos.summary.get.select { |i|
+    invoices=@calendar.todos.summary.get.select { |i|
       i =~ /^Invoice/
     }.sort {
       |a,b| a.split[1].to_i <=> b.split[1].to_i
     }
+    # star w/ invoice 111 if no invoices
+    invoices.length > 0 ? invoices : invoices << 'Invoice 110 0.0'
   end
 
   def outstanding
