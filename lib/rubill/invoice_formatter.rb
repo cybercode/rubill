@@ -9,6 +9,12 @@ class InvoiceFormatter
     renders :pdf, :for => Invoice
 
     def build_header
+      if options[:config]['address']
+        draw_table(
+          a_table('', options[:config]['address']),
+          defaults.merge(:row_gap => 0,
+            :position => :right, :orientation => :left))
+      end
       draw_table(address_table, defaults.merge(:row_gap => 0))
       add_text "\n"
 
@@ -30,13 +36,15 @@ class InvoiceFormatter
     end
 
     def build_footer
-      center_image_in_box(
-        'data/logo.png', :x => 0, :y => 50, :width => 600, :height => 40
-        )
+      return unless options[:config]['logo']
+      args={ }
+      options[:config]['logo'].each { |k,v| args[k.intern]=v  }
+      image=args.delete(:image)
+      center_image_in_box(image, args)
     end
 
     def finalize_invoice
-      file = "output/#{@calendar.name}_#{@calendar.next_invoice}.pdf"
+      file = "#{options[:dir]}/#{@calendar.name}_#{@calendar.next_invoice}.pdf"
       STDERR.puts "Creating pdf file #{file}"
       File.open(file, 'w') do |f| f << render_pdf; end
 

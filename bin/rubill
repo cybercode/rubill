@@ -1,12 +1,15 @@
 #!/usr/bin/ruby
+# -*- ruby -*-
 # $Id$
 require "rubygems"
-#gem "ruport","=1.2.2"
 require "ruport"
+require 'yaml'
 
-$:.unshift('./lib')
-%w(address_book calendar options invoice_formatter helpers).each do |f|
-  require "rubill/#{f}"
+LIBDIR=File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift LIBDIR
+
+Dir.glob(LIBDIR + '/rubill/*.rb') do |f|
+  require 'rubill/' + File.basename(f)
 end
 
 options=InvoiceOptions.parse(ARGV)

@@ -15,7 +15,6 @@ end
 def line_items
   init_attrs
 
-  rate=@address_book.rate_for_company(@calendar.name)
   t = Table(%w(date description hours))
   balance=@calendar.outstanding
   @calendar.items_for(@from, @to).each do |e|
@@ -31,7 +30,18 @@ def line_items
 end
 
 def address_table
-  Table('<i>Bill To</i>') { |t| address.each { |a| t << [a] } }
+  a_table 'Bill To', address
+  #Table('<i>Bill To</i>') { |t| address.each { |a| t << [a] } }
+end
+
+def a_table header, body
+  Table("<i>#{header}</i>") { |t| body.each { |l| t << [l] } }
+end
+
+def rate
+  options[:rate] ||
+    (options[:config]['rate'] ? options[:config]['rate'].to_f : nil) ||
+    @address_book.rate_for_company(@calendar.name)
 end
 
 def invoice_info
@@ -39,7 +49,7 @@ def invoice_info
     t << ['<i>Invoice #</i>', invoice_num]
     t << ['<i>Invoice Period</i>', period.join(' to ')]
     t << ['<i>Invoice Date</i>', Date.today]
-    t << ['<i>Rate</i>', @address_book.rate_for_company(@calendar.name)]
+    t << ['<i>Rate</i>', rate]
     t << ['<i>Terms</i>', '30 days']
   end
 end

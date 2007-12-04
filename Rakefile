@@ -6,12 +6,13 @@ require './lib/rubill.rb'
 
 Hoe.new('Rubill', Rubill::VERSION) do |p|
   p.rubyforge_name = 'Rubill'
-  # p.author = 'FIX'
-  # p.email = 'FIX'
-  # p.summary = 'FIX'
-  # p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
-  # p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
+  p.author = 'rick frankel'
+  p.email = 'rick@rickter.com'
+  p.url = ''
+  p.summary = 'Generate ruby report pdf bill from calendar'
+  p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
+  #p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
+  p.extra_deps << ['ruports', ">= 1.2.2"] << ['rb-appscript', ">= 0.4.0"]
 end
 
-# vim: syntax=Ruby
