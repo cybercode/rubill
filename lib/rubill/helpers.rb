@@ -5,9 +5,9 @@ def init_attrs
   @calendar = Calendar.new(options[:calendar])
   @address_book = AddressBook.new
 
-  @from = options[:from]||@calendar.last_billed_date+1
+  @from = options[:from] || @calendar.last_billed_date+1
   # default to end of month
-  @to=options[:to]||(@from >> 1) - 1
+  @to=options[:to] || (@from >> 1) - 1
   STDERR.puts "Generating invoice for #{@calendar.name} " +
     "from #{@from.to_s} to #{@to.to_s}"
 end
@@ -39,8 +39,7 @@ def a_table header, body
 end
 
 def rate
-  options[:rate] ||
-    (options[:config]['rate'] ? options[:config]['rate'].to_f : nil) ||
+  options[:rate] ? options[:rate] :
     @address_book.rate_for_company(@calendar.name)
 end
 
