@@ -49,7 +49,7 @@ class InvoiceFormatter
       STDERR.puts "Creating pdf file #{file}"
       File.open(file, 'w') do |f| f << render_pdf; end
 
-      add_invoice unless options[:todo]
+      add_invoice file unless options[:todo]
     end
   end
 end

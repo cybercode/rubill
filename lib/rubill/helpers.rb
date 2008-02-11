@@ -81,7 +81,7 @@ def defaults
   }
 end
 
-def add_invoice
+def add_invoice file
   init_attrs
-  @calendar.add_invoice invoice_num, @total, @from, @to
+  @calendar.add_invoice invoice_num, @total, @from, @to, file
 end

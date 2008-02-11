@@ -42,14 +42,15 @@ class Calendar < Application
   end
 
 
-  def add_invoice num, total, from, to
+  def add_invoice num, total, from, to, file
     summary = sprintf("Invoice %d %0.2f %s", num, total, to)
     due     = (Date.today+30).to_s
 
     STDERR.puts "Adding todo: '#{summary}' due on #{due}"
 
     @calendar.todos.end.make(:new => :todo, :with_properties => {
-        :summary => summary, :due_date => Time.parse(due)
+        :summary => summary, :due_date => Time.parse(due),
+        :url => "file://#{File.expand_path file}"
       })
   end
 
