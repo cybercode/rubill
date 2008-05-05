@@ -1,5 +1,5 @@
 # $Id$
-class Invoice < Ruport::Renderer
+class Invoice < Ruport::Controller
   stage :header, :body, :footer
   finalize :invoice
 end

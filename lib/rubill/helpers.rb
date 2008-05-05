@@ -25,7 +25,7 @@ def line_items
   @total = t.sigma('amount')
   t << ['', '', '', '']
   t << ['', '<b>Current</b>',"<b>#{t.sigma('hours')}</b>", fmt_ccy(@total)]
-  t << ['', '<b>Overdue balance</b>','',fmt_ccy(balance)]
+  t << ['', '<b>Balance</b>','',fmt_ccy(balance)]
   t << ['','<b>Total Due</b>','', fmt_ccy(balance+@total)]
 end
 
