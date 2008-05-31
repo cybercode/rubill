@@ -29,8 +29,9 @@ class Calendar < Application
     }.sort {
       |a,b| a.split[1].to_i <=> b.split[1].to_i
     }
-    # star w/ invoice 111 if no invoices
-    invoices.length > 0 ? invoices : invoices << 'Invoice 110 0.0'
+    # start w/ invoice 110, from beginning  of last month
+    invoices.length > 0 ? invoices : invoices << 
+      'Invoice 110 0.0 ' + ((Date.today + 1 - Date.today.day << 1) -1 ).to_s
   end
 
   def outstanding

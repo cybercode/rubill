@@ -5,8 +5,13 @@ require 'yaml'
 class InvoiceOptions
   OPTIONS=[
     ['c', 'config FILE', 'config file', nil],
-    ['f', 'from DATE',  Date, 'start date (1st of last month)', nil],
-    ['t', 'to DATE',    Date, 'end date (end of start month)',   nil],
+    ['f', 'from DATE',  Date, 
+      'start date (last billed date from calendar todos or beginning of last month)',
+      nil
+    ],
+    ['t', 'to DATE',    Date, 
+      'end date (end of last month or today if after first week of month)',  nil
+    ],
     ['T', 'todo',             "don't add invoice to calendar todos", false],
     ['d', 'directory DIR',    'output directory', '.'],
     ['r', 'rate RATE',  Float, 'billing rate', nil],
