@@ -9,7 +9,7 @@ def init_attrs
   # default to end of of last month or today if today after
   # first week of month
   today = Date.today
-  @to=options[:to] || (today.day > 7 ? today : today + 1 - today.day)
+  @to=options[:to] || (today.day > 7 ? today : today - today.day)
   STDERR.puts "Generating invoice for #{@calendar.name} " +
     "from #{@from.to_s} to #{@to.to_s}"
 end

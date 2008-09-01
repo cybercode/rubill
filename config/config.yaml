@@ -1,0 +1,13 @@
+#address:
+#  - cyberCode consulting, inc
+#  - 115 east 34th st 20e
+#  - ny ny 10016
+
+#rate: 100
+directory: /Users/rick/cybercode/billing/Invoices
+logo:
+  image: config/logo.png
+  x: 0
+  y: 50
+  width: 600
+  height: 40

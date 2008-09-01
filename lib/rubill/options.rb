@@ -2,6 +2,8 @@ require 'optparse'
 require 'optparse/date'
 require 'yaml'
 
+DEFAULT_FILE='./config/config.yaml'.freeze
+
 class InvoiceOptions
   OPTIONS=[
     ['c', 'config FILE', 'config file', nil],
@@ -55,8 +57,9 @@ class InvoiceOptions
     end
 
     config_options={ }
-    if arg_options[:config]
-      YAML.load_file(arg_options[:config]).each do |k,v|
+    if file=arg_options[:config] || 
+        File.exist?(DEFAULT_FILE) ? DEFAULT_FILE : nil
+      YAML.load_file(file).each do |k,v|
         config_options[k.intern]=
           case k.intern
           when :from, :to
