@@ -4,7 +4,7 @@
 #  - ny ny 10016
 
 #rate: 100
-directory: /Users/rick/cybercode/billing/Invoices
+directory: /Users/rick/Documents/Cybercode/Invoices
 logo:
   image: config/logo.png
   x: 0
