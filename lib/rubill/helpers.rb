@@ -48,6 +48,7 @@ end
 def invoice_info
   Table('label','value') do |t|
     t << ['<i>Invoice #</i>', invoice_num]
+    t << ['<i>Client</i>', @calendar.name]
     t << ['<i>Invoice Period</i>', period.join(' to ')]
     t << ['<i>Invoice Date</i>', Date.today]
     t << ['<i>Rate</i>', rate]

@@ -11,8 +11,10 @@ class AddressBook < Application
 
   def address_for_company name
     c=card_for_company(name)
-    card=%w(name organization).collect { |f| c.send(f).get }
-
+    card=[
+      c.name.get[0],
+      c.organization.get[0].sub(/ *\{.*\} *$/, '')
+    ]
     a=c.addresses[its.label.eq(@address)]
     return card unless a
     [
