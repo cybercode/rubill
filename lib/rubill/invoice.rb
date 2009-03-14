@@ -59,7 +59,7 @@ class Invoice
       :border_color  => 'ffffff',
       :border_style  => :grid,
       :border_width  => 2,
-      :column_widths => { 0 => 1.in, 2 => 0.75.in, 3 => 1.in },
+      :column_widths => { 0 => 1.in, 2 => 0.75.in, 3 => 1.in }
       )
     items, totals=line_items
     

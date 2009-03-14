@@ -1,5 +1,6 @@
 # $Id$
 require 'rubill/application'
+require 'Time'
 
 class Calendar < Application
   def initialize(cal_name)

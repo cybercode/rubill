@@ -1,18 +1,17 @@
 #!/usr/bin/env ruby
-# -*- ruby -*-
-# $Id$
-require "rubygems"
-require "ruport"
-require 'yaml'
-
 LIBDIR=File.dirname(__FILE__) + '/../lib'
 $LOAD_PATH.unshift LIBDIR
-
-Dir.glob(LIBDIR + '/rubill/*.rb') do |f|
-  require 'rubill/' + File.basename(f)
+if RUBY_VERSION >= '1.9' then
+Dir.glob('/usr/local/src/prawn*/lib').each do |d|
+  $LOAD_PATH << d
 end
+end
+
+require 'rubygems'
+require 'rubill/invoice'
+require 'rubill/options'
 
 options=InvoiceOptions.parse(ARGV)
 options[:calendar]=ARGV[0] || InvoiceOptions.parse(['-h'])
 
-Invoice.render_pdf(options)
+Invoice.new(options).save
