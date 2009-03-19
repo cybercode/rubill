@@ -32,13 +32,13 @@ class Invoice
   end
   
   def save
-    file =
-      "#{@options[:directory]}/#{@calendar.name}_#{@calendar.next_invoice}.pdf"
+    invoice_num = @calendar.next_invoice
+    file = "#{@options[:directory]}/#{@calendar.name}_#{invoice_num}.pdf"
     STDERR.puts "Creating pdf file #{file}"
 
     pdf = Prawn::Document.new(
       :left_margin => 1.25.in, :right_margin => 1.25.in )
-    
+    pdf.font_size = 10
     pdf.table address_book.address_for_company(@calendar.name).collect { 
       |v| [v]
     }, DEFAULT_ATTRS.merge(:headers => ['bill to' ]) 
@@ -73,6 +73,10 @@ class Invoice
       :fit => [pdf.margin_box.width, l['height']]
     end
     pdf.render_file(file)
+    
+    @calendar.add_invoice invoice_num, totals[0][3],
+    @from, @to, file unless @options[:todo]
+
   end
 
   def line_items
