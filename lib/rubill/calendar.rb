@@ -37,7 +37,9 @@ class Calendar < Application
 
   def outstanding
     @calendar.todos.get.select { |t|
-      t.completion_date.get == nil &&  t.summary.get =~ /^Invoice/
+      # snow leopard returns ":missing_value" instead of nil
+      (t.completion_date.get==nil || t.completion_date.get==:missing_value) &&
+      t.summary.get =~ /^Invoice/
     }.collect { |t|
       t.summary.get.split(' ')[2].to_f
     }.inject(0) { |sum, v| sum + v}
