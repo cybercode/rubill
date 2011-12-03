@@ -5,7 +5,11 @@ require 'Time'
 class Calendar < Application
   def initialize(cal_name)
     @appname='iCal'
-    @calendar=get_app.calendars[cal_name]
+    get_app.calendars.get.each do |c|
+      next unless c.name.get == cal_name
+      @calendar = c if c.events.count > 0
+      @todos    = c if c.todos.count  > 0
+    end
   end
 
   def name
@@ -25,7 +29,7 @@ class Calendar < Application
   end
 
   def invoices
-    invoices=@calendar.todos.summary.get.select { |i|
+    invoices=@todos.todos.summary.get.select { |i|
       i =~ /^Invoice/
     }.sort {
       |a,b| a.split[1].to_i <=> b.split[1].to_i
@@ -36,7 +40,7 @@ class Calendar < Application
   end
 
   def outstanding
-    @calendar.todos.get.select { |t|
+    @todos.todos.get.select { |t|
       # snow leopard returns ":missing_value" instead of nil
       (t.completion_date.get==nil || t.completion_date.get==:missing_value) &&
       t.summary.get =~ /^Invoice/
@@ -52,7 +56,7 @@ class Calendar < Application
 
     STDERR.puts "Adding todo: '#{summary}' due on #{due}"
 
-    @calendar.todos.end.make(:new => :todo, :with_properties => {
+    @todos.todos.end.make(:new => :todo, :with_properties => {
         :summary => summary, :due_date => Time.parse(due),
         :url => "file://#{File.expand_path file}"
       })
