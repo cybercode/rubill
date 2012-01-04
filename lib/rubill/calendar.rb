@@ -1,19 +1,21 @@
 # $Id$
 require 'rubill/application'
 require 'Time'
+require 'date'
 
 class Calendar < Application
   def initialize(cal_name)
     @appname='iCal'
     get_app.calendars.get.each do |c|
       next unless c.name.get == cal_name
-      @calendar = c if c.events.count > 0
-      @todos    = c if c.todos.count  > 0
+      @name = c.name.get
+      @events = c.events if c.events.count > 0
+      @todos  = c.todos  if c.todos.count  > 0
     end
   end
 
   def name
-    @calendar.name.get
+    @name
   end
 
   def last_billed_date
@@ -29,24 +31,29 @@ class Calendar < Application
   end
 
   def invoices
-    invoices=@todos.todos.summary.get.select { |i|
+    invoices=@todos.summary.get.select do |i|
       i =~ /^Invoice/
-    }.sort {
-      |a,b| a.split[1].to_i <=> b.split[1].to_i
-    }
+    end.sort do |a,b| 
+      a.split[1].to_i <=> b.split[1].to_i
+    end
+
     # start w/ invoice 110, from beginning  of last month
-    invoices.length > 0 ? invoices : invoices << 
-      'Invoice 110 0.0 ' + ((Date.today + 1 - Date.today.day << 1) -1 ).to_s
+    # (set invoice date to last day of month before last)
+    unless invoices.length > 0
+      invoices << 
+        'Invoice 110 0.0 ' + ((Date.today + 1 - Date.today.day << 1) - 1).to_s
+    end
+    invoices
   end
 
   def outstanding
-    @todos.todos.get.select { |t|
+    @todos.get.select do |t|
+      d = t.completion_date.get
       # snow leopard returns ":missing_value" instead of nil
-      (t.completion_date.get==nil || t.completion_date.get==:missing_value) &&
-      t.summary.get =~ /^Invoice/
-    }.collect { |t|
+      (d.nil? || d == :missing_value) && t.summary.get =~ /^Invoice/
+    end.collect do |t|
       t.summary.get.split(' ')[2].to_f
-    }.inject(0) { |sum, v| sum + v}
+    end.inject(0) { |sum, v| sum + v }
   end
 
 
@@ -56,23 +63,23 @@ class Calendar < Application
 
     STDERR.puts "Adding todo: '#{summary}' due on #{due}"
 
-    @todos.todos.end.make(:new => :todo, :with_properties => {
+    @todos.end.make(:new => :todo, :with_properties => {
         :summary => summary, :due_date => Time.parse(due),
         :url => "file://#{File.expand_path file}"
       })
   end
 
   def items_for from, to
-    @calendar.events.get.reject { |e|
+    @events.get.reject do |e|
       start = Date.parse(e.start_date.get.to_s)
       start < from || start > to
-    }.collect { |e|
+    end.collect do |e|
       [ Date.parse(e.start_date.get.to_s),
         e.summary.get, (
           Time.parse(e.end_date.get.to_s) - Time.parse(e.start_date.get.to_s)
           )/3600,
       ]
-    }.compact
+    end.compact
   end
 
   private

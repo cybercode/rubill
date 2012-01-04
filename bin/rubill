@@ -5,7 +5,6 @@ Dir.glob('/usr/local/src/prawn*/lib').each do |d|
   $LOAD_PATH << d
 end if RUBY_VERSION >= '1.9'
 
-require 'rubygems'
 require 'rubill/invoice'
 require 'rubill/options'
 
