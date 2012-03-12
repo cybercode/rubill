@@ -1,4 +1,3 @@
-# encoding: utf-8
 require "prawn"
 require "prawn/layout"
 require "prawn/measurement_extensions"
@@ -7,12 +6,13 @@ require 'rubill/address_book'
 
 class Invoice
   DEFAULT_ATTRS = { 
-    :vertical_padding => 0.5,
-    :border_width => 0,
-    :align_headers => :left,
-    :header_color  => 'eeeeee',
+    cell_style: {
+      border_width: 0, 
+      border_color: 'ffffff',
+      padding: 1
+    },
   }
-  attr_reader :calendar, :address_book
+  attr_reader :calendar, :address_book, :pdf
   def initialize(options={ })
     @options=options
     @calendar = Calendar.new(options[:calendar])
@@ -27,6 +27,12 @@ class Invoice
       address_book.rate_for_company(@calendar.name)
     @invoice_id ||= @calendar.next_invoice
 
+    @pdf = Prawn::Document.new(
+      :left_margin => 1.25.in,
+      :right_margin => 1.25.in
+      )
+    @pdf.font_size = 10
+
     STDERR.puts "Generating invoice for #{@calendar.name} " +
       "from #{@from.to_s} to #{@to.to_s}"
   end
@@ -36,47 +42,51 @@ class Invoice
     file = "#{@options[:directory]}/#{@calendar.name}_#{invoice_num}.pdf"
     STDERR.puts "Creating pdf file #{file}"
 
-    pdf = Prawn::Document.new(
-      :left_margin => 1.25.in, :right_margin => 1.25.in )
-    pdf.font_size = 10
-    pdf.table address_book.address_for_company(@calendar.name).collect { 
-      |v| [v]
-    }, DEFAULT_ATTRS.merge(:headers => ['bill to' ]) 
-    pdf.move_down 20
-    
-    pdf.table [
-      ['Invoice #',      "#{@calendar.name.downcase}-#{@invoice_id}"],
-      ['Invoice Period', [@from, @to].join(' to ')],
-      ['Invoice Date',   Date.today],
-      ['Rate',           @rate],
-      ['Terms',          '30 days'],
-    ], DEFAULT_ATTRS.merge(:align => :left)
-    pdf.move_down 20
-    
-    attrs=DEFAULT_ATTRS.merge(
-      :align         => { 2 => :right, 3 => :right },
-      :width         => pdf.margin_box.width,
-      :border_color  => 'ffffff',
-      :border_style  => :grid,
-      :border_width  => 2,
-      :column_widths => { 0 => 1.in, 2 => 0.75.in, 3 => 1.in }
+    table(
+      ['Bill to'],
+      address_book.address_for_company(@calendar.name).collect { |v| [v] },
+      DEFAULT_ATTRS
       )
-    items, totals=line_items
-    
-    pdf.table items, attrs.merge(:headers => %w[date description hours amount])
-    
-    pdf.font 'Helvetica-Bold'
-    pdf.table totals, attrs
-
+    pdf.move_down 10
+    pdf.table([
+        ['Invoice #',      "#{@calendar.name.downcase}-#{@invoice_id}"],
+        ['Invoice Period', [@from, @to].join(' to ')],
+        ['Invoice Date',   Date.today],
+        ['Rate',           @rate],
+        ['Terms',          '30 days'],
+      ], DEFAULT_ATTRS)
+    pdf.move_down 10
+    table(
+      %w[date description hours amount],
+      line_items,
+      header: true, width: pdf.margin_box.width,
+      cell_style: {
+        border_color: 'ffffff',
+        borders: [:left],
+        border_width: 2,
+        padding: 1,
+      }, 
+      column_widths: { 0 => 0.8.in, 2 => 0.5.in, 3 => 0.8.in }) do |t|
+      t.row(-3..-1).font = 'Helvetica-Bold'
+      t.rows(1..-1).columns(-2..-1).align = :right
+      t.rows(1..-1).columns(-2).padding = [1, 3, 1, 1]
+    end
     if l=@options[:logo]
-      pdf.image l['image'], :at => [l['x'], l['y']], 
-      :fit => [pdf.margin_box.width, l['height']]
+      pdf.image l['image'], at: [l['x'], l['y']], 
+      fit: [pdf.margin_box.width, l['height']]
     end
     pdf.render_file(file)
-    
     @calendar.add_invoice invoice_num, totals[0][3],
     @from, @to, file unless @options[:todo]
 
+  end
+
+  def table(header, data, attrs, &block)
+    data.unshift header
+    pdf.table(data, attrs) do
+      row(0).background_color = 'eeeeee'
+      yield self if block_given?
+    end
   end
 
   def line_items
@@ -87,15 +97,12 @@ class Invoice
     total = t.inject(0) { |s, r| s + r[3] }
     hours = t.inject(0) { |s, r| s + r[2]}
     
-    t.each { |r| r[3] = fmt_ccy(r[3]) }
+    t << 
+      ['', 'Current',   hours, total]   <<
+      ['', 'Balance',   '',    balance] <<
+      ['', 'Total Due', '',    balance+total]
 
-    tt = [
-      ['', 'Current',   hours, fmt_ccy(total)],
-      ['', 'Balance',   '',    fmt_ccy(balance)],
-      ['', 'Total Due', '',    fmt_ccy(balance+total)]
-    ]
-    
-    [t, tt]
+    t.each { |r| r[3] = fmt_ccy(r[3]) }
   end
   
   def fmt_ccy v

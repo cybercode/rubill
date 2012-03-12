@@ -1,4 +1,3 @@
-# $Id$
 require 'rubill/application'
 require 'Time'
 require 'date'
