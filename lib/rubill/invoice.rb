@@ -56,9 +56,10 @@ class Invoice
         ['Terms',          '30 days'],
       ], DEFAULT_ATTRS)
     pdf.move_down 10
+    items = line_items
     table(
       %w[date description hours amount],
-      line_items,
+      items,
       header: true, width: pdf.margin_box.width,
       cell_style: {
         border_color: 'ffffff',
@@ -71,12 +72,12 @@ class Invoice
       t.rows(1..-1).columns(-2..-1).align = :right
       t.rows(1..-1).columns(-2).padding = [1, 3, 1, 1]
     end
-    if l=@options[:logo]
-      pdf.image l['image'], at: [l['x'], l['y']], 
-      fit: [pdf.margin_box.width, l['height']]
+    if logo=@options[:logo]
+      pdf.image logo['image'], at: [logo['x'], logo['y']], 
+      fit: [pdf.margin_box.width, logo['height']]
     end
     pdf.render_file(file)
-    @calendar.add_invoice invoice_num, totals[0][3],
+    @calendar.add_invoice invoice_num, items[-3][3],
     @from, @to, file unless @options[:todo]
 
   end
