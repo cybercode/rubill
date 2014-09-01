@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 LIBDIR=File.dirname(__FILE__) + '/../lib'
 $LOAD_PATH.unshift LIBDIR
-Dir.glob('/usr/local/src/prawn*/lib').each do |d|
-  $LOAD_PATH << d
-end if RUBY_VERSION >= '1.9'
 
 require 'rubill/invoice'
 require 'rubill/options'
