@@ -1,0 +1,35 @@
+#+TITLE: README
+#+DATE: <2015-06-02 Tue>
+#+AUTHOR: Rick Frankel
+#+EMAIL: rick@eyeBook
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t c:nil
+#+OPTIONS: creator:nil d:(not "LOGBOOK") date:t e:t email:nil f:t inline:t
+#+OPTIONS: num:t p:nil pri:nil prop:nil stat:t tags:t tasks:t tex:t
+#+OPTIONS: timestamp:t title:t toc:t todo:t |:t
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+* Introduction
+Rubill is a ruby-based invoice generator for OS X. It integrates (via apple
+events) to the OS X calendar and contacts applications to track time and
+create PDF invoices.
+
+* Usage
+ 1. Create a calendar for a client (e.g. ~Cybercode~)
+ 2. (Optional) Create a contact entry with the calendar name in the Company
+    field (e.g., ~cyberCode consulting~).
+ 3. Add a phone number called ~Rate~ to the contact, as well as a ~work~ address.
+
+Track your time by putting timed entries in the calendar. At the end of the
+month, run ~rubill <calendar>~, which will generate a pdf invoice, and add a
+an  to the reminder app with the invoice number and amount. Any reminder not
+marked done will show up as an overdue balance on the next bill.
+
+There are many configuration options that can be set from the commandline or a
+(yaml) config file (defaults to ~./config/config.yaml~), including:
+
+- default rate
+- mailing address
+- a company logo
+- date range for billing (defaults to last month)
