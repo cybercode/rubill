@@ -23,7 +23,7 @@ create PDF invoices.
 
 Track your time by putting timed entries in the calendar. At the end of the
 month, run ~rubill <calendar>~, which will generate a pdf invoice, and add a
-an  to the reminder app with the invoice number and amount. Any reminder not
+an entry to the reminder app with the invoice number and amount. Any reminder not
 marked done will show up as an overdue balance on the next bill.
 
 There are many configuration options that can be set from the commandline or a
